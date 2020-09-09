@@ -14,6 +14,7 @@ import static io.restassured.RestAssured.given;
 public class ReplitOne {
 
     private Cookies cookies;
+    private String id;
 
     @BeforeClass
     public void init(){
@@ -34,20 +35,30 @@ public class ReplitOne {
     @Test
     public void createAccount(){
         PojoReplit body=new PojoReplit();
-        body.setName("SumerBank");
-        body.setIban("GS23 2424 2355 9");
+        body.setName("KittyBank");
+        body.setIban("GS23 2424 2375 7");
         body.setCurrency("USD");
-        body.setIntegrationCode("101101");
+        body.setIntegrationCode("101165");
         body.setSchoolId("5c5aa8551ad17423a4f6ef1d");
 
 
-        given()
+        id = given()
                 .cookies(cookies)
                 .body(body)
                 .contentType(ContentType.JSON)
                 .when()
                 .post("/school-service/api/bank-accounts")
-                .then().statusCode(201);
+                .then().statusCode(201)
+                .extract().jsonPath().getString("id");
+    }
+    @Test(priority = 1)
+    public void deleteAccount(){
+      given()
+              .cookies(cookies)
+              .contentType(ContentType.JSON)
+              .when()
+              .delete("/school-service/api/bank-accounts/"+id)
+              .then().statusCode(200);
     }
 
 }
